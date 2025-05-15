@@ -13,18 +13,25 @@ export default async function handler(req, res) {
 
   const { items, success_url, cancel_url } = req.body;
 
+  if (!items || !Array.isArray(items)) {
+    return res.status(400).json({ error: "Ongeldige items payload." });
+  }
+
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: items,
       mode: 'payment',
+      line_items: items.map(item => ({
+        price: item.priceId, // <-- hier pak je de juiste property
+        quantity: item.quantity || 1,
+      })),
       success_url,
       cancel_url,
     });
 
-    res.status(200).json({ id: session.id, url: session.url });
+    res.status(200).json({ url: session.url });
   } catch (err) {
-    console.error('Stripe error:', err.message);
-    res.status(500).json({ error: err.message });
+    console.error("Stripe fout:", err);
+    res.status(500).json({ error: "Stripe checkout error" });
   }
 }
