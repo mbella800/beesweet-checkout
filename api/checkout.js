@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       payment_method_types: ["card", "ideal", "bancontact", "sofort"],
       mode: "payment",
       line_items: items.map((item) => ({
-        price: item.priceId,
+        price: item.price, // ← jouw CMS veld heet ‘price’, dus dit moet zo
         quantity: item.quantity || 1,
       })),
       success_url,
