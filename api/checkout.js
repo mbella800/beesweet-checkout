@@ -22,16 +22,20 @@ export default async function handler(req, res) {
       payment_method_types: ["card", "ideal", "bancontact", "sofort"],
       mode: "payment",
       line_items: items.map((item) => ({
-        price: item.price, // ← DIT MOET HET ZIJN
+        price: item.priceId,
         quantity: item.quantity || 1,
       })),
       success_url,
       cancel_url,
     })
 
+    if (!session?.url) {
+      throw new Error("Stripe gaf geen betaallink terug.")
+    }
+
     res.status(200).json({ url: session.url })
   } catch (err) {
     console.error("Stripe fout:", err.message)
-    res.status(500).json({ error: err.message })
+    res.status(500).json({ error: err.message || "Er ging iets mis bij het aanmaken van de betaling." })
   }
 }
