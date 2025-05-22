@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
   try {
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ["card" "ideal", "bancontact", "sofort"],
       mode: "payment",
       line_items: items.map((item) => ({
         price: item.price, // ← DIT MOET HET ZIJN
